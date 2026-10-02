@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
 
-app = FastAPI(title="Smart Notes AI", version="0.2.0")
+app = FastAPI(title="Smart Notes AI", version="3.0.0")
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
