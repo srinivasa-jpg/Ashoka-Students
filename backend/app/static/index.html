@@ -1,48 +1,27 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#6d5dfc"><title>Smart Notes AI V3</title>
-<link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-<div class="app">
-<aside class="sidebar">
-<div class="brand"><div class="logo">✦</div><div><strong>Smart Notes AI</strong><small>Ashoka Students</small></div></div>
-<nav><button class="nav active">⌂ <span>Study Workspace</span></button><button class="nav">▤ <span>My Notes</span></button><button class="nav">◇ <span>Flashcards</span></button><button class="nav">✓ <span>Practice</span></button></nav>
-<div class="version">V3 • Student Edition</div>
-</aside>
-<main class="main">
-<header class="topbar"><div><span class="eyebrow">ASHOKA STUDENTS</span><h1>Turn notes into study material.</h1><p>Paste your notes or upload a PDF/TXT. Smart Notes creates a focused summary and key points in seconds.</p></div><div class="v3">V3</div></header>
-<section class="workspace">
-<div class="composer card">
-<div class="section-title"><div><h2>Create Notes Summary</h2><p>Start with your class notes, textbook content, or revision material.</p></div><span class="secure">● Ready</span></div>
-<div class="input-tabs"><button class="input-tab active" data-mode="paste">Paste Notes</button><button class="input-tab" data-mode="file">Upload File</button></div>
-<div id="pastePanel"><textarea id="notes" placeholder="Paste your study notes here..."></textarea><div class="hint"><span id="count">0 characters</span><span>Minimum 20 characters</span></div></div>
-<div id="filePanel" class="hidden"><label class="dropzone" for="file"><span class="upload-icon">⇧</span><strong>Upload PDF or TXT</strong><small>Choose a file up to 10 MB</small><input id="file" type="file" accept=".pdf,.txt"></label><div id="filename" class="filename"></div></div>
-<button id="summarize" class="primary">✦ Generate Study Notes</button><p id="status" class="status"></p>
-</div>
-<div id="result" class="results card">
-<div class="results-head"><div><span class="eyebrow">YOUR STUDY PACK</span><h2>Results</h2></div><button id="copy" class="ghost">Copy</button></div>
-<div class="result-tabs"><button class="result-tab active" data-tab="summary">Summary</button><button class="result-tab" data-tab="points">Key Points</button><button class="result-tab locked" data-tab="flash">Flashcards <small>soon</small></button><button class="result-tab locked" data-tab="quiz">Practice <small>soon</small></button><button class="result-tab locked" data-tab="ask">Ask AI <small>soon</small></button></div>
-<div id="summaryPane" class="pane"><div class="empty"><div>✦</div><h3>Your summary will appear here</h3><p>Add notes above and generate your study pack.</p></div><p id="summary" class="summary-text hidden"></p></div>
-<div id="pointsPane" class="pane hidden"><ul id="points"></ul></div>
-<div id="soonPane" class="pane hidden"><div class="empty"><div>◈</div><h3>Coming in the next V3 update</h3><p>This screen is prepared for the AI study features.</p></div></div>
-</div>
-</section>
-<footer>Smart Notes AI V3 · Built for faster revision</footer>
-</main>
-</div>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6657ed"><title>Smart Notes AI V3.1</title><link rel="stylesheet" href="/static/style.css"></head><body>
+<div class="shell"><header><div class="brand"><b>✦</b><div><strong>Smart Notes AI</strong><small>Ashoka Students · V3.1</small></div></div><span class="pill">Study Mode</span></header>
+<main><section class="hero"><span>SMART STUDY WORKSPACE</span><h1>Notes in. <em>Study pack out.</em></h1><p>Turn class notes and PDFs into revision-ready summaries, key ideas, terms, flashcards and questions.</p></section>
+<section class="input-card"><div class="mode"><button class="mode-btn active" data-mode="paste">Paste Notes</button><button class="mode-btn" data-mode="file">Upload PDF / TXT</button></div>
+<div id="pastePanel"><textarea id="notes" placeholder="Paste your lecture notes, textbook content, or revision material here…"></textarea><div class="meta"><span id="count">0 characters</span><span>20+ required</span></div></div>
+<div id="filePanel" class="hidden"><label class="drop" for="file"><b>↑</b><strong>Choose your study file</strong><span>PDF or TXT · maximum 10 MB</span><input id="file" type="file" accept=".pdf,.txt"></label><p id="filename"></p></div>
+<button id="generate" class="generate">✦ Build My Study Pack</button><p id="status"></p></section>
+<section id="results" class="results hidden"><div class="result-head"><div><span>GENERATED STUDY PACK</span><h2>Ready to revise</h2></div><button id="copy">Copy all</button></div>
+<div class="tabs"><button class="tab active" data-tab="overview">Overview</button><button class="tab" data-tab="notes">Detailed Notes</button><button class="tab" data-tab="terms">Key Terms</button><button class="tab" data-tab="flash">Flashcards</button><button class="tab" data-tab="practice">Practice</button></div>
+<div id="overview" class="panel"><article class="summary box"><label>QUICK SUMMARY</label><p id="summary"></p></article><div class="two"><article class="box"><label>KEY POINTS</label><ol id="points"></ol></article><article class="box exam"><label>EXAM FOCUS</label><ul id="exam"></ul></article></div></div>
+<div id="notes" class="panel hidden"><div class="box"><label>DETAILED NOTES</label><div id="detailed" class="note-list"></div></div></div>
+<div id="terms" class="panel hidden"><div id="termGrid" class="term-grid"></div></div>
+<div id="flash" class="panel hidden"><p class="tip">Tap a card to reveal the answer.</p><div id="flashGrid" class="flash-grid"></div></div>
+<div id="practice" class="panel hidden"><div id="questions" class="questions"></div></div>
+</section></main><footer>Smart Notes AI V3.1 · Ashoka Students</footer></div>
 <script>
-const $=id=>document.getElementById(id),status=$("status"),result=$("result"),notes=$("notes"),file=$("file");
-let last=null,mode="paste";
-document.querySelectorAll(".input-tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".input-tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");mode=b.dataset.mode;$("pastePanel").classList.toggle("hidden",mode!=="paste");$("filePanel").classList.toggle("hidden",mode!=="file")});
-notes.oninput=()=>$("count").textContent=notes.value.length+" characters";
-file.onchange=()=>{$("filename").textContent=file.files[0]?"Selected: "+file.files[0].name:""};
-function tab(name){document.querySelectorAll(".result-tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===name));$("summaryPane").classList.toggle("hidden",name!=="summary");$("pointsPane").classList.toggle("hidden",name!=="points");$("soonPane").classList.toggle("hidden",!["flash","quiz","ask"].includes(name))}
-document.querySelectorAll(".result-tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));
-function show(d){last=d;$("summary").textContent=d.summary;$("summary").classList.remove("hidden");$("summaryPane").querySelector(".empty")?.remove();const u=$("points");u.innerHTML="";d.key_points.forEach((p,i)=>{const li=document.createElement("li");li.innerHTML="<span>"+(i+1)+"</span><p></p>";li.querySelector("p").textContent=p;u.appendChild(li)});status.textContent="Study pack ready.";tab("summary");result.scrollIntoView({behavior:"smooth",block:"start"})}
-async function req(url,o){status.textContent="Generating your study pack…";$("summarize").disabled=true;try{const x=await fetch(url,o),d=await x.json();if(!x.ok)throw new Error(d.detail||"Something went wrong");show(d)}catch(e){status.textContent=e.message}finally{$("summarize").disabled=false}}
-$("summarize").onclick=()=>{if(mode==="file"){if(!file.files[0]){status.textContent="Choose a PDF or TXT file first.";return}const f=new FormData();f.append("file",file.files[0]);req("/upload",{method:"POST",body:f})}else req("/summarize",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:notes.value})})};
-$("copy").onclick=async()=>{if(!last)return;await navigator.clipboard.writeText(last.summary+"\n\nKey Points\n"+last.key_points.map(x=>"• "+x).join("\n"));$("copy").textContent="Copied";setTimeout(()=>$("copy").textContent="Copy",1200)};
+const $=x=>document.getElementById(x);let mode="paste",last=null;
+document.querySelectorAll(".mode-btn").forEach(b=>b.onclick=()=>{document.querySelectorAll(".mode-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");mode=b.dataset.mode;$("pastePanel").classList.toggle("hidden",mode!=="paste");$("filePanel").classList.toggle("hidden",mode!=="file")});
+$("notes").oninput=()=>$("count").textContent=$("notes").value.length+" characters";$("file").onchange=()=>$("filename").textContent=$("file").files[0]?"Selected: "+$("file").files[0].name:"";
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden")});
+const fill=(id,arr,render)=>{$(id).innerHTML="";arr.forEach((x,i)=>$(id).insertAdjacentHTML("beforeend",render(x,i)))};
+function show(d){last=d;$("summary").textContent=d.quick_summary;fill("points",d.key_points,x=>"<li>"+esc(x)+"</li>");fill("exam",d.exam_focus,x=>"<li><b>✓</b><span>"+esc(x)+"</span></li>");fill("detailed",d.detailed_notes,(x,i)=>"<div><b>"+(i+1)+"</b><p>"+esc(x)+"</p></div>");fill("termGrid",d.key_terms,x=>"<article class='term'><strong>"+esc(x.term)+"</strong><p>"+esc(x.definition)+"</p></article>");fill("flashGrid",d.flashcards,(x,i)=>"<button class='flashcard' onclick='this.classList.toggle(\"open\")'><span>Q"+(i+1)+"</span><strong>"+esc(x.question)+"</strong><p>"+esc(x.answer)+"</p><small>Tap to "+("reveal answer")+"</small></button>");fill("questions",d.practice_questions,(x,i)=>"<details><summary><span>"+(i+1)+"</span>"+esc(x.question)+"</summary><p><b>Suggested answer:</b> "+esc(x.answer)+"</p></details>");$("results").classList.remove("hidden");$("status").textContent="Your study pack is ready.";window.scrollTo({top:$("results").offsetTop-20,behavior:"smooth"})}
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+async function request(url,o){$("generate").disabled=true;$("status").textContent="Reading your notes and building the study pack…";try{const r=await fetch(url,o),d=await r.json();if(!r.ok)throw new Error(d.detail||"Could not generate study pack.");show(d)}catch(e){$("status").textContent=e.message}finally{$("generate").disabled=false}}
+$("generate").onclick=()=>{if(mode==="file"){const f=$("file").files[0];if(!f){$("status").textContent="Choose a PDF or TXT file first.";return}const fd=new FormData();fd.append("file",f);request("/upload",{method:"POST",body:fd})}else request("/summarize",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:$("notes").value})})};
+$("copy").onclick=async()=>{if(!last)return;const t="QUICK SUMMARY\n"+last.quick_summary+"\n\nKEY POINTS\n"+last.key_points.map(x=>"• "+x).join("\n")+"\n\nKEY TERMS\n"+last.key_terms.map(x=>x.term+": "+x.definition).join("\n");await navigator.clipboard.writeText(t);$("copy").textContent="Copied ✓";setTimeout(()=>$("copy").textContent="Copy all",1300)};
 </script></body></html>
