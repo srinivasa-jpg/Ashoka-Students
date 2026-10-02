@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
 
-app=FastAPI(title="Smart Notes AI",version="3.2.0")
+app=FastAPI(title="Smart Notes AI",version="3.3.0")
 STATIC_DIR=Path(__file__).parent/"static"; app.mount("/static",StaticFiles(directory=STATIC_DIR),name="static")
 STOP=set("""the a an and or but if then than to of in on at for from with by as is are was were be been being this that these those it its into about over under between through during can could should would may might will do does did has have had not no so such their there they them he she we you your our i which who what when where how also very more most some any each other used using use called make made many much""".split())
 
@@ -16,8 +16,9 @@ class NotesRequest(BaseModel): text:str=Field(min_length=20)
 class Term(BaseModel): term:str; definition:str
 class Flashcard(BaseModel): question:str; answer:str
 class PracticeQuestion(BaseModel): question:str; answer:str
+class NoteSection(BaseModel): heading:str; bullets:list[str]
 class StudyPack(BaseModel):
-    quick_summary:str; keywords:list[str]; detailed_notes:list[str]; key_points:list[str]
+    quick_summary:str; keywords:list[str]; detailed_notes:list[NoteSection]; key_points:list[str]
     key_terms:list[Term]; exam_focus:list[str]; flashcards:list[Flashcard]; practice_questions:list[PracticeQuestion]
 
 def clean(t): return re.sub(r"\s+"," ",t).strip()
@@ -86,7 +87,21 @@ def build_study_pack(text):
         if src:
             terms.append(Term(term=kw,definition=clip(src,150)));termseen.add(kw.lower())
 
-    detailed=[clip(s,210) for s in ss[:10]]
+    detailed=[]
+    used=set()
+    for kw in keywords[:6]:
+        related=[]
+        for s in ss:
+            if re.search(rf"\\b{re.escape(kw)}\\b",s,re.I):
+                p=clip(s,185)
+                if p not in used:
+                    related.append(p);used.add(p)
+            if len(related)==3:break
+        if related:detailed.append(NoteSection(heading=kw,bullets=related))
+    if not detailed:
+        chunks=[ss[i:i+3] for i in range(0,min(len(ss),12),3)]
+        for i,chunk in enumerate(chunks,1):
+            detailed.append(NoteSection(heading=f"Topic {i}",bullets=[clip(s,185) for s in chunk]))
     exam=points[:4]
     cards=[Flashcard(question=f"What is important about {t.term}?",answer=t.definition) for t in terms[:5]]
     practice=[PracticeQuestion(question=f"{['Explain','Describe','Write a short note on','Why is this important:','What do you understand by'][i%5]} {p[:72]}",answer=p) for i,p in enumerate(points[:5])]
@@ -95,7 +110,7 @@ def build_study_pack(text):
 @app.get("/")
 def home():return FileResponse(STATIC_DIR/"index.html")
 @app.get("/health")
-def health():return {"status":"ok","version":"3.2.0"}
+def health():return {"status":"ok","version":"3.3.0"}
 @app.post("/summarize",response_model=StudyPack)
 def summarize(request:NotesRequest):
     try:return build_study_pack(request.text)
