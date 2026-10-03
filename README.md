@@ -23,3 +23,8 @@ Open `http://127.0.0.1:8000`.
 
 ## Next milestone
 Mobile camera/gallery image upload with text extraction, followed by AI summaries, flashcards, quizzes, and Ask AI.
+
+
+## Live Demo
+
+🌐 https://ashoka-smart-notes-ai.onrender.com
